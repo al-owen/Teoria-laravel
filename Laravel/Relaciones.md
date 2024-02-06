@@ -221,3 +221,47 @@ public function up(): void
 }
 ```
 
+### Guardar la Relación Many to Many en el Controlador
+
+Imaginemos que estamos guardando una nueva película junto con sus categorías. En el controlador `MovieController`, podriamos tener un método para guardar la película y sus categorías asociadas:
+
+``` php
+use Illuminate\Http\Request;
+use App\Models\Movie;
+use App\Models\Category;
+
+class MovieController extends Controller
+{
+	public function store(Request $request)
+	{
+		// Validación de datos...
+	
+		// Crear una nueva película
+		$movie = new Movie($request->all());
+		$movie->save();
+		// Adjuntar categorías
+		// Asumiendo que recibimos los IDs de categorías como un array en la solicitud
+		$categoryIds = $request->input('categories', []); // ['1', '2', ...]
+		$movie->categories()->attach($categoryIds);
+		return redirect()->route('movies.index');
+	}
+}
+```
+### Explicación
+
+- **Creación de la Película**: Primero, se crea y guarda una nueva instancia de `Movie`.
+- **Adjuntamos las Categorías**: Luego, usamos el método `attach` para asociar categorías con la película. El método `attach` toma un array de IDs de categoría y los asocia con la película en la tabla intermedia `category_movie`.
+- **Datos de la Solicitud**: Este ejemplo asume que los IDs de las categorías se envían como parte de la solicitud, típicamente como un array.
+
+### Métodos Alternativos
+
+- **Sincronizar Categorías**: Si en lugar de simplemente añadir categorías, queremos sincronizarlas (es decir, asegurarnos de que solo las categorías proporcionadas estén asociadas con la película), podemos usar `sync` en lugar de `attach`:
+``` php
+$movie->categories()->sync($categoryIds);
+```
+
+- **Desvincular Categorías**: Si queremos desvincular categorías, podemos usar `detach`:
+``` php
+$movie->categories()->detach(); // Desvincula todas las categorías
+$movie->categories()->detach([1,2]); // Desvincula categorías específicas
+```
