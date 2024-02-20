@@ -78,14 +78,13 @@ public function handle($request, Closure $next, ...$roles)
         // Redirigir o abortar si el usuario no tiene el rol necesario
         abort(403);
     }
-
     return $next($request);
 }
 ```
 
 ### **Paso 4: Asignar Roles**
 
-Puedes asignar roles a los usuarios directamente en tu controlador o mediante seeder:
+Podemos asignar roles a los usuarios directamente en el controlador o mediante un seeder:
 
 ``` php
 $user->roles()->attach($roleId);
@@ -121,7 +120,7 @@ Route::get('/admin/dashboard', function () {
 
 ### Asignación de Roles a Usuarios
 
-Para asignar un rol a un usuario, primero debes crear roles y permisos. Aquí tienes un ejemplo de cómo hacerlo:
+Para asignar un rol a un usuario, primero debemos crear roles y permisos. Aquí tenemos un ejemplo de cómo hacerlo:
 
 ``` php
 use Spatie\Permission\Models\Role;
@@ -134,20 +133,29 @@ $viewDashboardPermission = Permission::create(['name' => 'view dashboard']);
 $adminRole->givePermissionTo($viewDashboardPermission);
 // Asignar el rol a un usuario
 $user->assignRole('admin');
+//Asignar varios roles
+$user->assignRole('writer', 'admin');
+//Quitar roles 
+$user->removeRole('writer');
+//Establecer roles especificos y eliminar los anteriores
+$user->syncRoles(['writer', 'admin']);
+//Comprobar que el usuario tiene un rol<
+$user->hasRole('writer');
 ```
 ### Uso en Middleware
 
-`spatie/laravel-permission` viene con dos middlewares que puedes utilizar para proteger tus rutas: `role:` y `permission:`. Para usar estos middlewares, primero debes registrarlos en `app/Http/Kernel.php`:
+`spatie/laravel-permission` viene con dos middlewares que podemos utilizar para proteger nuestras rutas: `role:` y `permission:`. Para usar estos middlewares, primero debemos registrarlos en `app/Http/Kernel.php`:
 
 ``` php
 protected $routeMiddleware = [
     // Otros middlewares...
-    'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-    'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+	'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+	'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+	'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
 ];
 ```
 
-Luego, puedes aplicar estos middlewares a tus rutas. Por ejemplo, para requerir que un usuario tenga el rol `admin`:
+Luego, podemos aplicar estos middlewares a las rutas. Por ejemplo, para requerir que un usuario tenga el rol `admin`:
 
 ``` php
 Route::get('/admin/dashboard', function () {
@@ -165,7 +173,7 @@ Route::get('/admin/dashboard', function () {
 
 ### Uso en Blade
 
-Para controlar la visibilidad del contenido en tus vistas Blade según los roles o permisos de los usuarios, puedes usar las directivas `@role` y `@can` que Laravel proporciona por defecto, ya que `spatie/laravel-permission` se integra perfectamente con el sistema de autorización de Laravel
+Para controlar la visibilidad del contenido en nuestras vistas Blade según los roles o permisos de los usuarios, podemos usar las directivas `@role` y `@can` que Laravel proporciona por defecto, ya que `spatie/laravel-permission` se integra perfectamente con el sistema de autorización de Laravel
 
 ``` php
 @role('admin')
@@ -179,7 +187,7 @@ Para controlar la visibilidad del contenido en tus vistas Blade según los roles
 
 ### Asignar Roles y Permisos en Seeder
 
-Puedes utilizar seeders para asignar roles y permisos a usuarios durante la fase de desarrollo o cuando preparas tu aplicación para producción. Aquí tienes un ejemplo de cómo hacerlo:
+Podemos utilizar seeders para asignar roles y permisos a usuarios durante la fase de desarrollo o cuando preparamos nuestra aplicación para producción. Aquí hay un ejemplo de cómo hacerlo:
 
 ``` php
 public function run()
@@ -190,5 +198,8 @@ public function run()
 
     $adminUser = User::create([/* Detalles del usuario */]);
     $adminUser->assignRole($adminRole);
+
+	//o simplemente asignando el nombre
+	$user->assignRole('client');
 }
 ```
