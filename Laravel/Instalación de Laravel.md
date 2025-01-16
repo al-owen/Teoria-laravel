@@ -38,6 +38,10 @@ sudo mv composer.phar /usr/local/bin/composer
 ## Creación de proyectos Laravel
 
 Para poder crear un proyecto de Laravel existen 2 opciones principales.
+Es necesario tener instalado:
+- 7zip
+- Git
+- NodeJs
 
 ### Opción 1 (Recomendada)
 
