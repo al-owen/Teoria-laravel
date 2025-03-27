@@ -18,7 +18,7 @@ php artisan make:seeder UserSeeder
 - Dentro del seeder, escribimos el código que insertará datos en la base de datos. Pidemos utilitzar el constructor de consultas de Laravel o Eloquent para hacer eso.  
 - Ejemplo:
 
-    ``` php
+``` php
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
